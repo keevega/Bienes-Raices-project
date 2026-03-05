@@ -11,9 +11,13 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', './views');
 
+// Carpeta Pública
+app.use( express.static('public'));
+
+
 //Routing (endpoints)
 
-app.use('/auth', usuarioRoutes)
+app.use('/auth', usuarioRoutes);
 
 
 
