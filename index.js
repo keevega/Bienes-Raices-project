@@ -15,7 +15,9 @@ app.use(express.urlencoded({extended: true}));
 
 app.use( cookieParser() )
 
+// Habilitar CSRF
 
+app.use( csrf({cookie: true}) ) 
 
 
 
