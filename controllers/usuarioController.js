@@ -6,12 +6,66 @@ import { emailRegistro, emailOlvidePassword } from '../helpers/emails.js'
 
 const formularioLogin = (req, res) => {
     res.render('auth/login',{
-        pagina: 'Iniciar Sesión'
+        pagina: 'Iniciar Sesión',
+        csrfToken: req.csrfToken()
     });
 }
 
-const autenticar = (req, res) => {
+const autenticar = async (req, res) => {
+    // Validacion autenticar
+    await check('email').isEmail().withMessage('El Email es Obligatorio').run(req);
+    await check('password').notEmpty().withMessage('El Password es Obligatorio').run(req);
+
+    let resultado = validationResult(req);
+
+    if (!resultado.isEmpty()) {
+        //Errores
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: resultado.array(),
+        })
+    }
+
+    const {email, password} = req.body;
+
+    // Comprobar si usuario existe
+
+    const usuario = await Usuario.findOne({where:{email}});
+
+    if (!usuario) {
+        //Errores
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'El Usuario no Existe'}],
+        })
+    }
+
+    // Comprobar si el usuario esta confirmado
+
+    if(!usuario.confirmado) {
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'Tu Cuenta no ha sido confirmada'}],
+        })
+    }
+
+    // Revisar el password
+
+    if(!usuario.verificarPassword(password)){
+        return res.render('auth/login', {
+            pagina: 'Iniciar Sesión',
+            csrfToken: req.csrfToken(),
+            errores: [{msg: 'El Password es Incorrecto'}],
+        })
+    }
+
+    // Autenticar al usuario
+
     
+
 }
 
 const formularioRegistro = (req, res) => {
