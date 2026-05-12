@@ -1,6 +1,7 @@
 import { unlink } from 'node:fs/promises'
 import { validationResult } from "express-validator"
-import { Precio, Categoria, Propiedad} from '../models/Index.js'
+import { Precio, Categoria, Propiedad, Mensaje} from '../models/Index.js'
+import { esVendedor } from '../helpers/index.js'
 
 const admin = async (req, res) => {
 
@@ -187,7 +188,6 @@ const almacenarImagen = async (req, res, next) => {
     }
 
     try {
-        console.log(req.file)
 
         // Almacenar la imagen y publicar la propiedad
         propiedad.imagen = req.file.filename
@@ -360,8 +360,66 @@ const mostrarPropiedad = async (req, res) => {
     res.render('propiedades/mostrar', {
         propiedad,
         pagina: propiedad.titulo,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        usuario: req.usuario,
+        esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId)
     })
+}
+
+const enviarMensaje = async (req, res) => {
+    
+    const { id } = req.params
+
+    // Comprobar que la propiedad exista
+
+    const propiedad = await Propiedad.findByPk(id,{
+        include: [
+            {model: Categoria, as: 'categoria'},
+            {model: Precio, as: 'precio'}
+        ]
+    })
+
+
+    if(!propiedad) {
+        return res.redirect('/404')
+    }
+
+    // Renderizar los errores
+    let resultado = validationResult(req)
+    console.log(resultado)
+    
+    if(!resultado.isEmpty()){
+        return res.render('propiedades/mostrar', {
+            propiedad,
+            pagina: propiedad.titulo,
+            csrfToken: req.csrfToken(),
+            usuario: req.usuario,
+            esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+            errores: resultado.array()
+        })
+    }
+
+    console.log(req.body)
+    console.log(req.params)
+    console.log(req.usuario)
+
+    return;
+
+    //Almacenar el Mensaje
+
+    await Mensaje.create({
+        
+    })
+
+
+    res.render('propiedades/mostrar', {
+            propiedad,
+            pagina: propiedad.titulo,
+            csrfToken: req.csrfToken(),
+            usuario: req.usuario,
+            esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+    })
+
 }
 
 export {
@@ -373,5 +431,6 @@ export {
     editar,
     guardarCambios,
     eliminar,
-    mostrarPropiedad
+    mostrarPropiedad,
+    enviarMensaje
 }
