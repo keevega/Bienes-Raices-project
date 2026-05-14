@@ -1,10 +1,11 @@
 import express from 'express'
 import { inicio, categorias, noEncontrado, buscador } from '../controllers/appController.js'
+import identificarUsuario from "../middleware/identificarUsuario.js"
 
 const router = express.Router()
 
 // Pagina de inicio
-router.get('/', inicio)
+router.get('/', identificarUsuario, inicio)
 
 // Categorias
 router.get('/categorias/:id', categorias)

@@ -8,7 +8,13 @@ html(lang="es")
         link(rel="stylesheet", href="/css/app.css")
     body(class="min-h-screen bg-gray-100")
         
-        include includes/header-app
+        if !usuario
+            include includes/header-app
+        else 
+            include includes/header-admin
+
+        
+        include includes/propiedades-header
 
         main(class="mx-auto container mt-10 px-2")
             block contenido 

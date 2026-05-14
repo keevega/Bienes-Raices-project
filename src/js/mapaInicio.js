@@ -56,6 +56,7 @@
 
 
         propiedades.forEach(propiedad => {
+
             // Agregar los pines
             const marker = new L.marker([propiedad?.lat, propiedad?.lng], {
                 autoPan: true

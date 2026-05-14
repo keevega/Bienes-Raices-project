@@ -6,7 +6,7 @@ header.bg-indigo-600.p-4
 
         nav(class="my-5 text-sm md:flex md:items-center md:gap-3 font-bold text-white hidden")
             a(href="/mis-propiedades" class="transition-transform duration-300 hover:scale-110") Mis Propiedades
-            a(href="" class="transition-transform duration-300 hover:scale-110") Mi Perfil
+            a(href="/mi-perfil" class="transition-transform duration-300 hover:scale-110") Mi Perfil
 
             form(action="/auth/cerrar-sesion" method="POST")
                 input(type="hidden" name="_csrf" value= csrfToken)

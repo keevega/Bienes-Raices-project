@@ -491,6 +491,18 @@ const verMensajes = async (req, res) => {
     })
 }
 
+const perfilUsuario = (req, res) => {
+    
+    // Mostrar datos de usuario
+
+
+    // Renderizar vista
+    res.render('perfil',
+        
+    )
+
+}
+
 export {
     admin,
     crear,
@@ -503,5 +515,6 @@ export {
     cambiarEstado,
     mostrarPropiedad,
     enviarMensaje,
-    verMensajes
+    verMensajes,
+    perfilUsuario
 }

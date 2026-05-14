@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize'
-import { Precio, Categoria, Propiedad }  from '../models/Index.js'
+import { Precio, Categoria, Propiedad, Usuario }  from '../models/Index.js'
 import { Op } from 'sequelize'
 
 const inicio = async (req, res) => {
@@ -46,7 +46,8 @@ const inicio = async (req, res) => {
         precios,
         casas,
         departamentos,
-        csrfToken: req.csrfToken()
+        csrfToken: req.csrfToken(),
+        usuario: req.usuario
     })
 
 }
