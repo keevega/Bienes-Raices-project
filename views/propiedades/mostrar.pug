@@ -51,7 +51,11 @@ block contenido
                     if !esVendedor
 
                         h3(class="text-2xl text-center my-10 font-extrabold text-gray-900") Vendedor
-                        if usuario
+
+                        if enviado  
+                            p(class="p-2 text-center bg-green-100 text-green-600 uppercase font-bold") Mensaje Enviado Correctamente
+
+                        else if usuario
 
                             if errores 
                                 div(class="max-w-md mx-auto my-10")
@@ -63,13 +67,13 @@ block contenido
 
                                 div(class="space-y-5")
                                     label(for="mensaje") Mensaje 
-                                    textarea(id="mensaje" class="w-full py-2 px-1 border border-gray-300 rounded-lg shadow placeholder-gray-400" placeholder="Coloca tu mensaje aquí")
+                                    textarea(id="mensaje" class="w-full py-2 px-1 border border-gray-300 rounded-lg shadow placeholder-gray-400" placeholder="Coloca tu mensaje aquí" name="mensaje")
 
                                     input(type="submit" value="Enviar Mensaje" class="bg-indigo-600 text-white font-bold uppercase text-sm w-full p-2 cursor-pointer")
                         else 
                             div(class="flex flex-col items-center justify-center gap-2")
                                 p(class="text-center") Si deseas contactar al vendedor 
-                                a(class="text-indigo-600 hover:font-bold" href="/auth/crear-cuenta") debes crear una cuenta
+                                a(class="text-indigo-600 hover:font-bold" href="/auth/registro") debes crear una cuenta
 
 block scripts 
     script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")

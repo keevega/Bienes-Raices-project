@@ -1,7 +1,7 @@
 import { unlink } from 'node:fs/promises'
 import { validationResult } from "express-validator"
-import { Precio, Categoria, Propiedad, Mensaje} from '../models/Index.js'
-import { esVendedor } from '../helpers/index.js'
+import { Precio, Categoria, Propiedad, Mensaje, Usuario} from '../models/Index.js'
+import { esVendedor, formatearFecha } from '../helpers/index.js'
 
 const admin = async (req, res) => {
 
@@ -33,7 +33,8 @@ const admin = async (req, res) => {
                 },
                 include: [
                     {model: Categoria, as: 'categoria'},
-                    {model: Precio, as: 'precio'}
+                    {model: Precio, as: 'precio'},
+                    {model: Mensaje, as: 'mensajes'}
                 ]
             }),
             Propiedad.count({
@@ -337,6 +338,35 @@ const eliminar = async (req, res) => {
 
 }
 
+// Modifica el Estado de la Propiedad
+const cambiarEstado = async(req, res) => {
+    const { id } = req.params
+
+    // Validar que la prop exista
+
+    const propiedad = await Propiedad.findByPk(id)
+
+    if(!propiedad){
+        return res.redirect('/mis-propiedades')
+    }
+
+    // Revisar que quien visita la URL, es quien creo la propiedad
+
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString() )  {
+        return res.redirect('/mis-propiedades')
+    }
+
+    //Actualizar
+    propiedad.publicado = !propiedad.publicado;
+    //console.log(propiedad.publicado)
+
+    await propiedad.save()
+
+    res.json({
+        resultado: 'ok'
+    })
+}
+
 // Muestra una propiedad
 
 const mostrarPropiedad = async (req, res) => {
@@ -353,7 +383,7 @@ const mostrarPropiedad = async (req, res) => {
     })
 
 
-    if(!propiedad) {
+    if(!propiedad || !propiedad.publicado ) {
         return res.redirect('/404')
     }
     
@@ -386,7 +416,7 @@ const enviarMensaje = async (req, res) => {
 
     // Renderizar los errores
     let resultado = validationResult(req)
-    console.log(resultado)
+
     
     if(!resultado.isEmpty()){
         return res.render('propiedades/mostrar', {
@@ -399,17 +429,21 @@ const enviarMensaje = async (req, res) => {
         })
     }
 
-    console.log(req.body)
-    console.log(req.params)
-    console.log(req.usuario)
 
-    return;
+    const { mensaje } = req.body
+    const { id : propiedadId } = req.params
+    const { id : usuarioId } = req.usuario
+
 
     //Almacenar el Mensaje
 
+    console.log('antes de crear msj')
     await Mensaje.create({
-        
+        mensaje,
+        propiedadId,
+        usuarioId
     })
+    console.log('despues')
 
 
     res.render('propiedades/mostrar', {
@@ -418,8 +452,43 @@ const enviarMensaje = async (req, res) => {
             csrfToken: req.csrfToken(),
             usuario: req.usuario,
             esVendedor: esVendedor(req.usuario?.id, propiedad.usuarioId),
+            enviado: true
     })
 
+}
+
+// Leer Mensajes Recibidos
+
+const verMensajes = async (req, res) => {
+
+    const { id } = req.params
+
+    // Validar que la prop exista
+
+    const propiedad = await Propiedad.findByPk(id, {
+        include: [
+                    {model: Mensaje, as: 'mensajes', 
+                        include: [
+                            {model: Usuario.scope('eliminarPassword'), as: 'usuario'}
+                        ]}
+                ]
+    })
+
+    if(!propiedad){
+        return res.redirect('/mis-propiedades')
+    }
+
+    // Revisar que quien visita la URL, es quien creo la propiedad
+
+    if(propiedad.usuarioId.toString() !== req.usuario.id.toString() )  {
+        return res.redirect('/mis-propiedades')
+    }
+
+    res.render('propiedades/mensajes',{
+        pagina: 'Mensajes',
+        mensajes: propiedad.mensajes,
+        formatearFecha
+    })
 }
 
 export {
@@ -431,6 +500,8 @@ export {
     editar,
     guardarCambios,
     eliminar,
+    cambiarEstado,
     mostrarPropiedad,
-    enviarMensaje
+    enviarMensaje,
+    verMensajes
 }

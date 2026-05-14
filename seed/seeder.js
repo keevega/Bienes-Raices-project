@@ -46,10 +46,31 @@ const eliminarDatos = async () => {
     }
 }
 
+const sincronizarTablas = async () => {
+    try {
+        // await Promise.all([
+        //     Categoria.destroy({where: {}, truncate: true}),
+        //     Precio.destroy({where: {}, truncate: true})
+        // ])        
+
+        await db.sync({alter: true})
+        console.log('Tablas Sincronizadas Correctamente');
+        exit()
+
+    } catch (error) {
+        console.log(error)
+        exit(1)
+    }
+}
+
 if(process.argv[2] === "-i") {
     importarDatos();
 }
 
 if(process.argv[2] === "-e") {
     eliminarDatos();
+}
+
+if(process.argv[2] === "-s") {
+    sincronizarTablas();
 }
