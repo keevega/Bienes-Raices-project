@@ -5,6 +5,7 @@ const emailRegistro = async (datos) => {
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
+        //secure: false,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS
@@ -54,7 +55,7 @@ const emailOlvidePassword = async (datos) => {
             <p>Hola ${nombre}, has solicitado reestablecer tu password en bienesRaices.com</p>
 
             <p>Sigue el siguiente enlace para generar un password nuevo:
-                <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/olvide-password/${token}">Reestablecer Password</a>
+                <a href="${process.env.BACKEND_URL}/auth/olvide-password/${token}">Reestablecer Password</a>
             </p>
 
             <p>Si tu no solicitaste el cambio de password, puedes ignorar el mensaje</p>

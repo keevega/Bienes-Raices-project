@@ -145,7 +145,7 @@ const registrar = async(req,res) => {
     })
 
     //Envia email de confirmacion
-
+    console.log('-------- Enviando EMAIL -------')
     emailRegistro({
         nombre : usuario.nombre,
         email : usuario.email,
