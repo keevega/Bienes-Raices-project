@@ -12,6 +12,14 @@ const emailRegistro = async (datos) => {
             pass: process.env.EMAIL_PASS
         }
     });
+
+    // Check connectivity to mail server
+    try {
+        await transport.verify();
+        console.log("Server is ready to take our messages");
+    } catch (err) {
+        console.error("Verification failed", err);
+    }
     
     const { email, nombre, token } = datos;
 
